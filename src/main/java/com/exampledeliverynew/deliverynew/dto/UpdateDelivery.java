@@ -2,7 +2,6 @@ package com.exampledeliverynew.deliverynew.dto;
 
 
 import com.exampledeliverynew.deliverynew.entity.DefaultDelivery;
-import com.exampledeliverynew.deliverynew.repository.DeliveryRepository;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
