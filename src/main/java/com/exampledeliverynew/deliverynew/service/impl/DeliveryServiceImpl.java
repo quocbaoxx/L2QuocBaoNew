@@ -49,6 +49,9 @@ public class DeliveryServiceImpl implements DeliveryService {
 //            e dùng sql native mà nó báo lỗi Executing an update/delete query e chưa bug đc
 //            deliveryRepository.updateDelivery(updateDelivery.getLocationId(), updateDelivery.getFfmId(), updateDelivery.getLmId(), updateDelivery.getWhId());
             defaultDelivery = deliveryRepository.findUpdatedDelivery(updateDelivery.getLocationId());
+            if (defaultDelivery == null) {
+                throw new IllegalArgumentException(ErrorMessages.INVALID_VALUE.getMessage());
+            }
             defaultDelivery.setFfmId(updateDelivery.getFfmId());
             defaultDelivery.setLmId(updateDelivery.getLmId());
             defaultDelivery.setWarehouseId(updateDelivery.getWhId());
