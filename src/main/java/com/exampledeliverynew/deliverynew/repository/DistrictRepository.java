@@ -17,6 +17,24 @@ public interface DistrictRepository extends JpaRepository<District, Long> {
     boolean existsById(@Param("id") Long id);
 
     @Query(value = "SELECT " +
+            "prov.province_id AS locationId, " +
+            "prov.province_name AS provinceName, " +
+            "ffm.partner_id AS ffmId, " +
+            "ffm.partner_name AS ffmName, " +
+            "ffm.pn_type AS ffmType, " +
+            "lm.partner_id AS lmId, " +
+            "lm.partner_name AS lmName, " +
+            "lm.pn_type AS lmType, " +
+            "wh.warehouse_id AS warehouseId, " +
+            "wh.warehouse_name AS warehouseName " +
+            "FROM lc_province prov " +
+            "JOIN cf_default_delivery cf ON prov.province_id = cf.location_id " +
+            "JOIN bp_partner ffm ON cf.ffm_partner_id = ffm.partner_id " +
+            "JOIN bp_partner lm ON cf.lm_partner_id = lm.partner_id " +
+            "JOIN bp_warehouse wh ON cf.warehouse_id = wh.warehouse_id;", nativeQuery = true)
+    List<LocationResult> getLogisticsProvince();
+
+    @Query(value = "SELECT " +
             "ds.district_id AS locationId, " +
             "ds.district_name AS districtName, " +
             "prov.province_name AS provinceName,"+
@@ -34,7 +52,7 @@ public interface DistrictRepository extends JpaRepository<District, Long> {
             "JOIN bp_partner ffm ON cf.ffm_partner_id = ffm.partner_id " +
             "JOIN bp_partner lm ON cf.lm_partner_id = lm.partner_id " +
             "JOIN bp_warehouse wh ON cf.warehouse_id = wh.warehouse_id", nativeQuery = true)
-    List<LocationResult> getLogiticDistrict();
+    List<LocationResult> getLogisticDistricts();
 
 
     @Query(value =
@@ -66,5 +84,5 @@ public interface DistrictRepository extends JpaRepository<District, Long> {
                     "    bp_partner lm ON cf.lm_partner_id = lm.partner_id " +
                     "JOIN " +
                     "    bp_warehouse wh ON cf.warehouse_id = wh.warehouse_id", nativeQuery = true)
-    List<LocationResult> getLogiticSubdistrict();
+    List<LocationResult> getLogisticsSubdistricts();
 }

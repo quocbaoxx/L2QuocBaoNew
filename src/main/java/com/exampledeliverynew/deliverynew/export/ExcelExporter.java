@@ -19,10 +19,8 @@ public class ExcelExporter {
                 "Warehouse Name", "LM ID", "LM Name", "LM Type", "FFM ID", "FFM Name", "FFM Type"};
 
         try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-            CreationHelper createHelper = workbook.getCreationHelper();
             Sheet sheet = workbook.createSheet("Location Results");
 
-            // Header row
             Font headerFont = workbook.createFont();
             headerFont.setBold(true);
             headerFont.setColor(IndexedColors.BLUE.getIndex());
@@ -42,9 +40,9 @@ public class ExcelExporter {
                 Row row = sheet.createRow(rowNum++);
 
                 row.createCell(0).setCellValue(locationResult.getLocationId());
-                row.createCell(1).setCellValue(locationResult.getprovinceName());
-                row.createCell(2).setCellValue(locationResult.getdistrictName());
-                row.createCell(3).setCellValue(locationResult.getsubdistrictName());
+                row.createCell(1).setCellValue(locationResult.getProvinceName());
+                row.createCell(2).setCellValue(locationResult.getDistrictName());
+                row.createCell(3).setCellValue(locationResult.getSubdistrictName());
                 row.createCell(4).setCellValue(locationResult.getWarehouseId());
                 row.createCell(5).setCellValue(locationResult.getWarehouseName());
                 row.createCell(6).setCellValue(locationResult.getLmId());

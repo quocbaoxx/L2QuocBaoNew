@@ -29,7 +29,7 @@ public class ProvinceController {
     private  final  ExcelExporter excelExporter;
 
     @GetMapping("/all")
-    public DataResponse<List<ProvinceDTO>> getAllLogitic(@RequestParam Long leverMapping){
+    public DataResponse<List<ProvinceDTO>> getAllLogisticsProvince(@RequestParam Long leverMapping){
         List<ProvinceDTO> provinceDTOS = provinceService.getAllLever(leverMapping);
         return DataResponse.ok(provinceDTOS);
     }
@@ -37,7 +37,7 @@ public class ProvinceController {
     @GetMapping("/export/excel")
     public ResponseEntity<byte[]> exportToExcel(@RequestParam int lever) {
         try {
-            List<LocationResult> locationResults = provinceService.getAllexpost(lever);
+            List<LocationResult> locationResults = provinceService.getAllExpost(lever);
             ByteArrayInputStream in = excelExporter.locationResultsToExcel(locationResults);
 
             HttpHeaders headers = new HttpHeaders();

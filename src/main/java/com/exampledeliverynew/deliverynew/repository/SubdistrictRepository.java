@@ -15,6 +15,44 @@ public interface SubdistrictRepository extends JpaRepository<Subdistrict, Long> 
     @Query(value = "SELECT COUNT(*) > 0 FROM lc_subdistrict WHERE subdistrict_id = :id", nativeQuery = true)
     boolean existsById(@Param("id") Long id);
 
+    @Query(value = "SELECT " +
+            "prov.province_id AS locationId, " +
+            "prov.province_name AS provinceName, " +
+            "ffm.partner_id AS ffmId, " +
+            "ffm.partner_name AS ffmName, " +
+            "ffm.pn_type AS ffmType, " +
+            "lm.partner_id AS lmId, " +
+            "lm.partner_name AS lmName, " +
+            "lm.pn_type AS lmType, " +
+            "wh.warehouse_id AS warehouseId, " +
+            "wh.warehouse_name AS warehouseName " +
+            "FROM lc_province prov " +
+            "JOIN cf_default_delivery cf ON prov.province_id = cf.location_id " +
+            "JOIN bp_partner ffm ON cf.ffm_partner_id = ffm.partner_id " +
+            "JOIN bp_partner lm ON cf.lm_partner_id = lm.partner_id " +
+            "JOIN bp_warehouse wh ON cf.warehouse_id = wh.warehouse_id;", nativeQuery = true)
+    List<LocationResult> getLogisticsProvince();
+
+    @Query(value = "SELECT " +
+            "ds.district_id AS locationId, " +
+            "ds.district_name AS districtName, " +
+            "prov.province_name AS provinceName,"+
+            "ffm.partner_id AS ffmId, " +
+            "ffm.partner_name AS ffmName, " +
+            "ffm.pn_type AS ffmType, " +
+            "lm.partner_id AS lmId, " +
+            "lm.partner_name AS lmName, " +
+            "lm.pn_type AS lmType, " +
+            "wh.warehouse_id AS warehouseId, " +
+            "wh.warehouse_name AS warehouseName " +
+            "FROM lc_province prov " +
+            "JOIN lc_district ds ON prov.province_id = ds.province_id " +
+            "JOIN cf_default_delivery cf ON ds.district_id = cf.location_id " +
+            "JOIN bp_partner ffm ON cf.ffm_partner_id = ffm.partner_id " +
+            "JOIN bp_partner lm ON cf.lm_partner_id = lm.partner_id " +
+            "JOIN bp_warehouse wh ON cf.warehouse_id = wh.warehouse_id", nativeQuery = true)
+    List<LocationResult> getLogisticDistricts();
+
     @Query(value =
             "SELECT " +
                     "    cf.location_id AS locationId, " +
@@ -44,5 +82,5 @@ public interface SubdistrictRepository extends JpaRepository<Subdistrict, Long> 
                     "    bp_partner lm ON cf.lm_partner_id = lm.partner_id " +
                     "JOIN " +
                     "    bp_warehouse wh ON cf.warehouse_id = wh.warehouse_id", nativeQuery = true)
-    List<LocationResult> getLogiticSubdistrict();
+    List<LocationResult> getLogisticsSubdistricts();
 }

@@ -12,6 +12,7 @@ import com.exampledeliverynew.deliverynew.service.DeliveryService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
@@ -24,15 +25,16 @@ public class DeliveryServiceImpl implements DeliveryService {
     private  final SubdistrictRepository subdistrictRepository;
 
     @Override
-    public List<LocationResult> getAllLogitict() {
-        List<LocationResult> locationResults = deliveryRepository.getAllLogitict();
+    public List<LocationResult> getAllLogistics() {
+        List<LocationResult> locationResults = deliveryRepository.getAllLogistics();
         return locationResults;
     }
 
     @Override
+    @Transactional
     public UpdateDelivery updateDelivery(int lever, UpdateDelivery updateDelivery) {
 
-        DefaultDelivery defaultDelivery;
+        DefaultDelivery defaultDelivery ;
         Long locationIdDTO = updateDelivery.getLocationId();
         int locationLv ;
         if (provinceRepository.existsById(locationIdDTO)){
@@ -46,19 +48,11 @@ public class DeliveryServiceImpl implements DeliveryService {
         }
 
         if (locationLv >= lever){
-//            e dùng sql native mà nó báo lỗi Executing an update/delete query e chưa bug đc
-//            deliveryRepository.updateDelivery(updateDelivery.getLocationId(), updateDelivery.getFfmId(), updateDelivery.getLmId(), updateDelivery.getWhId());
-            defaultDelivery = deliveryRepository.findUpdatedDelivery(updateDelivery.getLocationId());
-            if (defaultDelivery == null) {
-                throw new IllegalArgumentException(ErrorMessages.INVALID_VALUE.getMessage());
-            }
-            defaultDelivery.setFfmId(updateDelivery.getFfmId());
-            defaultDelivery.setLmId(updateDelivery.getLmId());
-            defaultDelivery.setWarehouseId(updateDelivery.getWhId());
-            deliveryRepository.save(defaultDelivery);
+            deliveryRepository.updateDelivery(updateDelivery.getLocationId(), updateDelivery.getFfmId(), updateDelivery.getLmId(), updateDelivery.getWhId());
         }else {
             throw  new IndexOutOfBoundsException(ErrorMessages.FORBIDDEN.getMessage());
         }
+        defaultDelivery = new DefaultDelivery(updateDelivery.getLocationId(),updateDelivery.getFfmId(),updateDelivery.getLmId(),updateDelivery.getWhId());
 
         return new UpdateDelivery(defaultDelivery);
     }

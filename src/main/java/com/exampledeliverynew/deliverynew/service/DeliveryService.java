@@ -6,7 +6,7 @@ import com.exampledeliverynew.deliverynew.dto.UpdateDelivery;
 import java.util.List;
 
 public interface DeliveryService {
-    List<LocationResult> getAllLogitict();
+    List<LocationResult> getAllLogistics();
 
     UpdateDelivery updateDelivery(int lever, UpdateDelivery updateDelivery);
 }

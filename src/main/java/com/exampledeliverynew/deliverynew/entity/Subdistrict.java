@@ -19,6 +19,6 @@ public class Subdistrict {
     private String name;
 
     @Column(name = "district_id")
-    private Long district_id;
+    private Long districtId;
 
 }

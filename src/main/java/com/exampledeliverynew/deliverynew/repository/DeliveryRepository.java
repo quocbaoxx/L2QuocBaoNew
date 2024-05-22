@@ -28,15 +28,10 @@ public interface DeliveryRepository extends JpaRepository<DefaultDelivery, Long>
             "JOIN bp_partner ffm ON cf.ffm_partner_id = ffm.partner_id " +
             "JOIN bp_partner lm ON cf.lm_partner_id = lm.partner_id " +
             "JOIN bp_warehouse wh ON cf.warehouse_id = wh.warehouse_id", nativeQuery = true)
-    List<LocationResult> getAllLogitict();
-
-    @Query(value = "SELECT * FROM cf_default_delivery WHERE location_id = :locationId", nativeQuery = true)
-    DefaultDelivery findByLocationId(@Param("locationId") Long locationId);
+    List<LocationResult> getAllLogistics();
 
     @Modifying
     @Query(value = "UPDATE cf_default_delivery SET ffm_partner_id = :ffmId, lm_partner_id = :lmId, warehouse_id = :whId WHERE location_id = :locationId", nativeQuery = true)
     void updateDelivery(@Param("locationId") Long locationId, @Param("ffmId") Long ffmId, @Param("lmId") Long lmId, @Param("whId") Long whId);
 
-    @Query(value = "SELECT * FROM cf_default_delivery WHERE location_id = :locationId", nativeQuery = true)
-    DefaultDelivery findUpdatedDelivery(@Param("locationId") Long locationId);
 }

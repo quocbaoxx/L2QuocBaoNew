@@ -20,9 +20,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public interface LocationResult {
     Long  getLocationId();
-    String  getprovinceName();
-    String  getdistrictName();
-    String getsubdistrictName();
+    String  getProvinceName();
+    String  getDistrictName();
+    String getSubdistrictName();
     Long getWarehouseId();
     String getWarehouseName();
     Long getLmId();

@@ -27,14 +27,15 @@ public class DistrictServiceImpl implements DistrictService {
     public List<DistrictDTO> getAllLeverDistrict(Long lever) {
         List<LocationResult> locationResults ;
         switch (lever.intValue()){
-            case  LEVER_DISTRICT:{
-                locationResults = districtRepository.getLogiticDistrict();
+            case  LEVER_PROVINCE:
+                locationResults = districtRepository.getLogisticsProvince();
                 break;
-            }
-            case  LEVER_SUBDISTRICT:{
-                locationResults = districtRepository.getLogiticSubdistrict();
+            case  LEVER_DISTRICT:
+                locationResults = districtRepository.getLogisticDistricts();
                 break;
-            }
+            case  LEVER_SUBDISTRICT:
+                locationResults = districtRepository.getLogisticsSubdistricts();
+                break;
             default:
                 throw  new IllegalArgumentException(ErrorMessages.INVALID_VALUE.getMessage());
 

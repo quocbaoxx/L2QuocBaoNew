@@ -28,10 +28,15 @@ public class SubdistrictServiceImpl implements SubdistrictService {
 
         List<LocationResult> locationResults ;
         switch (lever.intValue()){
-            case  LEVER_SUBDISTRICT:{
-                locationResults = subdistrictRepository.getLogiticSubdistrict();
+            case  LEVER_PROVINCE:
+                locationResults = subdistrictRepository.getLogisticsProvince();
                 break;
-            }
+            case LEVER_DISTRICT:
+                locationResults = subdistrictRepository.getLogisticDistricts();
+                break;
+            case  LEVER_SUBDISTRICT:
+                locationResults = subdistrictRepository.getLogisticsSubdistricts();
+                break;
             default:
                 throw  new IllegalArgumentException(ErrorMessages.INVALID_VALUE.getMessage());
         }

@@ -8,5 +8,6 @@ import java.util.List;
 public interface ProvinceService {
     List<ProvinceDTO> getAllLever(Long leverMapping);
 
-    List<LocationResult> getAllexpost(int lever);
+    List<LocationResult> getAllExpost(int level);
+
 }

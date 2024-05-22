@@ -31,7 +31,7 @@ public interface ProvinceRepository extends JpaRepository<Province, Long> {
             "JOIN bp_partner ffm ON cf.ffm_partner_id = ffm.partner_id " +
             "JOIN bp_partner lm ON cf.lm_partner_id = lm.partner_id " +
             "JOIN bp_warehouse wh ON cf.warehouse_id = wh.warehouse_id;", nativeQuery = true)
-    List<LocationResult> getLogiticProvince();
+    List<LocationResult> getLogisticsProvince();
 
     @Query(value = "SELECT " +
             "ds.district_id AS locationId, " +
@@ -51,7 +51,7 @@ public interface ProvinceRepository extends JpaRepository<Province, Long> {
             "JOIN bp_partner ffm ON cf.ffm_partner_id = ffm.partner_id " +
             "JOIN bp_partner lm ON cf.lm_partner_id = lm.partner_id " +
             "JOIN bp_warehouse wh ON cf.warehouse_id = wh.warehouse_id", nativeQuery = true)
-    List<LocationResult> getLogiticDistrict();
+    List<LocationResult> getLogisticDistricts();
 
     @Query(value =
             "SELECT " +
@@ -82,6 +82,6 @@ public interface ProvinceRepository extends JpaRepository<Province, Long> {
                     "    bp_partner lm ON cf.lm_partner_id = lm.partner_id " +
                     "JOIN " +
                     "    bp_warehouse wh ON cf.warehouse_id = wh.warehouse_id", nativeQuery = true)
-    List<LocationResult> getLogiticSubdistrict();
+    List<LocationResult> getLogisticsSubdistricts();
 
 }

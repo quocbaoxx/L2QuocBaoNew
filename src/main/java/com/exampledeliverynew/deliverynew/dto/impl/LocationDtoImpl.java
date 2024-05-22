@@ -24,9 +24,9 @@ public class LocationDtoImpl implements LocationDTO {
     }
 
     private String buildName(LocationResult locationResult) {
-        String provinceName = locationResult.getprovinceName() != null ? locationResult.getprovinceName() : "";
-        String districtName = locationResult.getdistrictName() != null ? locationResult.getdistrictName() : "";
-        String subdistrictName = locationResult.getsubdistrictName() != null ? locationResult.getsubdistrictName() : "";
+        String provinceName = locationResult.getProvinceName() != null ? locationResult.getProvinceName() : "";
+        String districtName = locationResult.getDistrictName() != null ? locationResult.getDistrictName() : "";
+        String subdistrictName = locationResult.getSubdistrictName() != null ? locationResult.getSubdistrictName() : "";
         return provinceName + ", " + districtName + ", " + subdistrictName;
     }
 

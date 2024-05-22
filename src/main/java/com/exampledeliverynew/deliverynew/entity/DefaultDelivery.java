@@ -30,4 +30,10 @@ public class DefaultDelivery {
     private String region;
 
 
+    public DefaultDelivery(Long locationId, Long ffmId, Long lmId, Long whId) {
+        this.locationId = locationId;
+        this.ffmId = ffmId;
+        this.lmId = lmId;
+        this.warehouseId = whId;
+    }
 }

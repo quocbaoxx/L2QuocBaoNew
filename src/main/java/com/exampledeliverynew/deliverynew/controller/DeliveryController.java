@@ -10,15 +10,15 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/deliverys")
+@RequestMapping("/api/v1/deliveries")
 @RequiredArgsConstructor
 public class DeliveryController {
 
     private  final DeliveryService deliveryService;
 
-    @GetMapping("/logiticts")
-    public DataResponse<List<LocationResult>> getAllLogitict(){
-        List<LocationResult> locationResults = deliveryService.getAllLogitict();
+    @GetMapping("/logistics")
+    public DataResponse<List<LocationResult>> getAllLogistics(){
+        List<LocationResult> locationResults = deliveryService.getAllLogistics();
         return DataResponse.ok(locationResults);
     }
 

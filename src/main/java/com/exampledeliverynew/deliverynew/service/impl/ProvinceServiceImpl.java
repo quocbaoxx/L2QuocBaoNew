@@ -25,18 +25,15 @@ public class ProvinceServiceImpl implements ProvinceService {
 
         List<LocationResult> locationResults ;
         switch (leverMapping.intValue()){
-            case  LEVER_PROVINCE:{
-                locationResults = provinceRepository.getLogiticProvince();
+            case  LEVER_PROVINCE:
+                locationResults = provinceRepository.getLogisticsProvince();
                 break;
-            }
-            case  LEVER_DISTRICT:{
-                locationResults = provinceRepository.getLogiticDistrict();
+            case  LEVER_DISTRICT:
+                locationResults = provinceRepository.getLogisticDistricts();
                 break;
-            }
-            case  LEVER_SUBDISTRICT:{
-                locationResults = provinceRepository.getLogiticSubdistrict();
+            case  LEVER_SUBDISTRICT:
+                locationResults = provinceRepository.getLogisticsSubdistricts();
                 break;
-            }
             default:
                 throw  new IllegalArgumentException(ErrorMessages.INVALID_VALUE.getMessage());
 
@@ -45,17 +42,14 @@ public class ProvinceServiceImpl implements ProvinceService {
     }
 
     @Override
-    public List<LocationResult> getAllexpost(int lever) {
+    public List<LocationResult> getAllExpost(int lever) {
         switch (lever) {
-            case LEVER_PROVINCE: {
-                return provinceRepository.getLogiticProvince();
-            }
-            case LEVER_DISTRICT: {
-                return provinceRepository.getLogiticDistrict();
-            }
-            case LEVER_SUBDISTRICT: {
-                return provinceRepository.getLogiticSubdistrict();
-            }
+            case LEVER_PROVINCE:
+                return provinceRepository.getLogisticsProvince();
+            case LEVER_DISTRICT:
+                return provinceRepository.getLogisticDistricts();
+            case LEVER_SUBDISTRICT:
+                return provinceRepository.getLogisticsSubdistricts();
             default:
                 throw new IllegalArgumentException(ErrorMessages.INVALID_VALUE.getMessage());
         }
