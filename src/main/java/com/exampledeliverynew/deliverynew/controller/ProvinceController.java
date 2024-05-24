@@ -4,6 +4,7 @@ package com.exampledeliverynew.deliverynew.controller;
 import com.exampledeliverynew.deliverynew.commons.DataResponse;
 import com.exampledeliverynew.deliverynew.dto.LocationResult;
 import com.exampledeliverynew.deliverynew.dto.ProvinceDTO;
+import com.exampledeliverynew.deliverynew.dto.UpdateDelivery;
 import com.exampledeliverynew.deliverynew.export.ExcelExporter;
 import com.exampledeliverynew.deliverynew.service.ProvinceService;
 import lombok.RequiredArgsConstructor;
@@ -11,10 +12,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -32,6 +30,13 @@ public class ProvinceController {
     public DataResponse<List<ProvinceDTO>> getAllLogisticsProvince(@RequestParam Long leverMapping){
         List<ProvinceDTO> provinceDTOS = provinceService.getAllLever(leverMapping);
         return DataResponse.ok(provinceDTOS);
+    }
+
+
+    @PutMapping("/update")
+    public DataResponse<UpdateDelivery> updateDeliveryProvince(@RequestParam int lever, @RequestBody UpdateDelivery updateDelivery){
+        UpdateDelivery updateDelivery1 = provinceService.updateDeliveryProvince(lever, updateDelivery);
+        return DataResponse.ok(updateDelivery1);
     }
 
     @GetMapping("/export/excel")

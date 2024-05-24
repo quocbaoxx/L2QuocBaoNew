@@ -3,6 +3,7 @@ package com.exampledeliverynew.deliverynew.repository;
 import com.exampledeliverynew.deliverynew.dto.LocationResult;
 import com.exampledeliverynew.deliverynew.entity.Province;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -14,6 +15,7 @@ public interface ProvinceRepository extends JpaRepository<Province, Long> {
 
     @Query(value = "SELECT COUNT(*) > 0 FROM lc_province WHERE province_id = :id", nativeQuery = true)
     boolean existsById(@Param("id") Long id);
+
 
     @Query(value = "SELECT " +
             "prov.province_id AS locationId, " +
@@ -31,7 +33,7 @@ public interface ProvinceRepository extends JpaRepository<Province, Long> {
             "JOIN bp_partner ffm ON cf.ffm_partner_id = ffm.partner_id " +
             "JOIN bp_partner lm ON cf.lm_partner_id = lm.partner_id " +
             "JOIN bp_warehouse wh ON cf.warehouse_id = wh.warehouse_id;", nativeQuery = true)
-    List<LocationResult> getLogisticsProvince();
+    List<LocationResult> getDistrictAndLogisticLevelOne();
 
     @Query(value = "SELECT " +
             "ds.district_id AS locationId, " +
@@ -51,7 +53,7 @@ public interface ProvinceRepository extends JpaRepository<Province, Long> {
             "JOIN bp_partner ffm ON cf.ffm_partner_id = ffm.partner_id " +
             "JOIN bp_partner lm ON cf.lm_partner_id = lm.partner_id " +
             "JOIN bp_warehouse wh ON cf.warehouse_id = wh.warehouse_id", nativeQuery = true)
-    List<LocationResult> getLogisticDistricts();
+    List<LocationResult> getDistrictAndLogisticLevelTwo();
 
     @Query(value =
             "SELECT " +
@@ -82,6 +84,9 @@ public interface ProvinceRepository extends JpaRepository<Province, Long> {
                     "    bp_partner lm ON cf.lm_partner_id = lm.partner_id " +
                     "JOIN " +
                     "    bp_warehouse wh ON cf.warehouse_id = wh.warehouse_id", nativeQuery = true)
-    List<LocationResult> getLogisticsSubdistricts();
+    List<LocationResult> getDistrictAndLogisticLevelThree();
 
+    @Modifying
+    @Query(value = "UPDATE cf_default_delivery SET ffm_partner_id = :ffmId, lm_partner_id = :lmId, warehouse_id = :whId WHERE location_id = :locationId", nativeQuery = true)
+    void updateDeliveryProvince(@Param("locationId") Long locationId, @Param("ffmId") Long ffmId, @Param("lmId") Long lmId, @Param("whId") Long whId);
 }
