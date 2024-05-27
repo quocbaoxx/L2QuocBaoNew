@@ -6,7 +6,6 @@ import com.exampledeliverynew.deliverynew.dto.LocationResult;
 import com.exampledeliverynew.deliverynew.dto.UpdateDelivery;
 import com.exampledeliverynew.deliverynew.dto.impl.DistrictDTOImpl;
 import com.exampledeliverynew.deliverynew.entity.DefaultDelivery;
-import com.exampledeliverynew.deliverynew.entity.Partner;
 import com.exampledeliverynew.deliverynew.entity.WareHouse;
 import com.exampledeliverynew.deliverynew.repository.*;
 import com.exampledeliverynew.deliverynew.service.DistrictService;
