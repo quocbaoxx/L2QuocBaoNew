@@ -6,7 +6,7 @@ import com.exampledeliverynew.deliverynew.dto.UpdateDelivery;
 import java.util.List;
 
 public interface DistrictService {
-    List<DistrictDTO> getAllLeverDistrict(Long lever);
+    List<DistrictDTO> getAllLeverDistrict(Long lever, Long provinceId);
 
     UpdateDelivery updateDeliveryDistrict(int lever, UpdateDelivery updateDelivery);
 }

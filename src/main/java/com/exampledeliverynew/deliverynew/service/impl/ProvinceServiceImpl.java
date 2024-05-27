@@ -6,9 +6,8 @@ import com.exampledeliverynew.deliverynew.dto.ProvinceDTO;
 import com.exampledeliverynew.deliverynew.dto.UpdateDelivery;
 import com.exampledeliverynew.deliverynew.dto.impl.ProvinceDTOImpl;
 import com.exampledeliverynew.deliverynew.entity.DefaultDelivery;
-import com.exampledeliverynew.deliverynew.repository.DistrictRepository;
-import com.exampledeliverynew.deliverynew.repository.ProvinceRepository;
-import com.exampledeliverynew.deliverynew.repository.SubdistrictRepository;
+import com.exampledeliverynew.deliverynew.entity.WareHouse;
+import com.exampledeliverynew.deliverynew.repository.*;
 import com.exampledeliverynew.deliverynew.service.ProvinceService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,20 +25,22 @@ public class ProvinceServiceImpl implements ProvinceService {
     private final ProvinceRepository provinceRepository ;
     private  final DistrictRepository districtRepository;
     private  final SubdistrictRepository subdistrictRepository;
+    private  final WarehouseRepository warehouseRepository;
+    private  final PartnerRepository partnerRepository;
 
     @Override
     public List<ProvinceDTO> getAllLever(Long leverMapping) {
 
         List<LocationResult> locationResults ;
         switch (leverMapping.intValue()){
-            case  LEVER_PROVINCE:
-                locationResults = provinceRepository.getDistrictAndLogisticLevelOne();
+            case  LEVER_ONE:
+                locationResults = provinceRepository.getProvinceAndLogisticLevelOne();
                 break;
-            case  LEVER_DISTRICT:
-                locationResults = provinceRepository.getDistrictAndLogisticLevelTwo();
+            case  LEVER_TWO:
+                locationResults = provinceRepository.getProvinceAndLogisticLevelTwo();
                 break;
-            case  LEVER_SUBDISTRICT:
-                locationResults = provinceRepository.getDistrictAndLogisticLevelThree();
+            case  LEVER_THREE:
+                locationResults = provinceRepository.getProvinceAndLogisticLevelThree();
                 break;
             default:
                 throw  new IllegalArgumentException(ErrorMessages.INVALID_VALUE.getMessage());
@@ -47,7 +48,6 @@ public class ProvinceServiceImpl implements ProvinceService {
         }
         return  mapQueryResultsToDTO(locationResults);
     }
-
 
     @Override
     @Transactional
@@ -65,9 +65,8 @@ public class ProvinceServiceImpl implements ProvinceService {
         }else {
             throw  new IllegalArgumentException(ErrorMessages.INVALID_VALUE.getMessage());
         }
-
         if (locationLv >= lever){
-            provinceRepository.updateDeliveryProvince(updateDelivery.getLocationId(), updateDelivery.getFfmId(), updateDelivery.getLmId(), updateDelivery.getWhId());
+            validateEntities(updateDelivery);
         }else {
             throw  new IndexOutOfBoundsException(ErrorMessages.FORBIDDEN.getMessage());
         }
@@ -76,18 +75,18 @@ public class ProvinceServiceImpl implements ProvinceService {
         return new UpdateDelivery(defaultDelivery);
     }
 
-    @Override
-    public List<LocationResult> getAllExpost(int lever) {
-        switch (lever) {
-            case LEVER_PROVINCE:
-                return provinceRepository.getDistrictAndLogisticLevelOne();
-            case LEVER_DISTRICT:
-                return provinceRepository.getDistrictAndLogisticLevelTwo();
-            case LEVER_SUBDISTRICT:
-                return provinceRepository.getDistrictAndLogisticLevelThree();
-            default:
-                throw new IllegalArgumentException(ErrorMessages.INVALID_VALUE.getMessage());
+    private void validateEntities(UpdateDelivery updateDelivery) {
+        Long ffmId = updateDelivery.getFfmId();
+        Long lmId = updateDelivery.getLmId();
+        Long whId = updateDelivery.getWhId();
+
+        WareHouse wareHouse = warehouseRepository.getById(whId);
+        Long count = partnerRepository.checkExits(ffmId, lmId);
+
+        if (wareHouse == null ||  count == null || !count.equals(2l) ) {
+            throw new IllegalArgumentException(ErrorMessages.INVALID_VALUE.getMessage());
         }
+        provinceRepository.updateDeliveryProvince(updateDelivery.getLocationId(), updateDelivery.getFfmId(), updateDelivery.getLmId(), updateDelivery.getWhId());
     }
 
     private List<ProvinceDTO> mapQueryResultsToDTO(List<LocationResult> locationResults) {

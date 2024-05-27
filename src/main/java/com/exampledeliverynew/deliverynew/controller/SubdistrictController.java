@@ -17,8 +17,8 @@ public class SubdistrictController {
     private  final SubdistrictService subdistrictService;
 
     @RequestMapping("/all")
-    public DataResponse<List<SubdistrictDTO>> getAllSubdistrict(@RequestParam Long lever){
-        List<SubdistrictDTO> subdistrictDTOS  = subdistrictService.getAllLeverSubdistrict(lever);
+    public DataResponse<List<SubdistrictDTO>> getAllSubdistrict(@RequestParam Long lever, @RequestParam Long districtId){
+        List<SubdistrictDTO> subdistrictDTOS  = subdistrictService.getAllLeverSubdistrict(lever, districtId);
         return DataResponse.ok(subdistrictDTOS);
     }
 

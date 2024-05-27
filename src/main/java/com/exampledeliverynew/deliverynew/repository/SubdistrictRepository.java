@@ -17,7 +17,7 @@ public interface SubdistrictRepository extends JpaRepository<Subdistrict, Long> 
     boolean existsById(@Param("id") Long id);
 
     @Query(value = "SELECT " +
-            "prov.province_id AS locationId, " +
+            "sub.subdistrict_id AS locationId, " +
             "prov.province_name AS provinceName, " +
             "dt.district_name AS districtName, " +
             "sub.subdistrict_name AS subdistrictName, " +
@@ -30,24 +30,24 @@ public interface SubdistrictRepository extends JpaRepository<Subdistrict, Long> 
             "wh.warehouse_id AS warehouseId, " +
             "wh.warehouse_name AS warehouseName " +
             "FROM " +
-            "lc_province prov " +
-            "JOIN " +
-            "lc_district dt ON prov.province_id = dt.province_id " +
-            "JOIN " +
-            "lc_subdistrict sub ON dt.district_id = sub.district_id " +
-            "JOIN " +
+            "lc_subdistrict sub  " +
+            "LEFT JOIN " +
+            "lc_district dt ON dt.district_id = sub.district_id " +
+            "LEFT JOIN " +
+            "lc_province prov ON dt.province_id = prov.province_id " +
+            "LEFT JOIN " +
             "cf_default_delivery cf ON prov.province_id = cf.location_id " +
-            "JOIN " +
+            "LEFT JOIN " +
             "bp_partner ffm ON cf.ffm_partner_id = ffm.partner_id " +
-            "JOIN " +
+            "LEFT JOIN " +
             "bp_partner lm ON cf.lm_partner_id = lm.partner_id " +
-            "JOIN " +
-            "bp_warehouse wh ON cf.warehouse_id = wh.warehouse_id;", nativeQuery = true)
-    List<LocationResult> getSubDistrictAndLogisticLevelOne();
-
+            "LEFT JOIN " +
+            "bp_warehouse wh ON cf.warehouse_id = wh.warehouse_id " +
+            "WHERE  dt.district_id = :districtId ", nativeQuery = true)
+    List<LocationResult> getSubDistrictAndLogisticLevelOne(@Param("districtId") Long districtId);
 
     @Query(value = "SELECT " +
-            "ds.district_id AS locationId, " +
+            "sub.subdistrict_id AS locationId, " +
             "ds.district_name AS districtName, " +
             "prov.province_name AS provinceName, " +
             "sub.subdistrict_name AS subdistrictName, " +
@@ -60,25 +60,25 @@ public interface SubdistrictRepository extends JpaRepository<Subdistrict, Long> 
             "wh.warehouse_id AS warehouseId, " +
             "wh.warehouse_name AS warehouseName " +
             "FROM " +
-            "lc_province prov " +
-            "JOIN " +
-            "lc_district ds ON prov.province_id = ds.province_id " +
-            "JOIN " +
-            "lc_subdistrict sub ON ds.district_id = sub.district_id " +
-            "JOIN " +
+            "lc_subdistrict sub " +
+            "LEFT JOIN " +
+            "lc_district ds ON ds.district_id = sub.district_id " +
+            "LEFT JOIN " +
+            "lc_province prov ON ds.province_id = prov.province_id " +
+            "LEFT JOIN " +
             "cf_default_delivery cf ON ds.district_id = cf.location_id " +
-            "JOIN " +
+            "LEFT JOIN " +
             "bp_partner ffm ON cf.ffm_partner_id = ffm.partner_id " +
-            "JOIN " +
+            "LEFT JOIN " +
             "bp_partner lm ON cf.lm_partner_id = lm.partner_id " +
-            "JOIN " +
-            "bp_warehouse wh ON cf.warehouse_id = wh.warehouse_id;", nativeQuery = true)
-    List<LocationResult> getSubDistrictAndLogisticLevelTwo();
-
+            "LEFT JOIN " +
+            "bp_warehouse wh ON cf.warehouse_id = wh.warehouse_id " +
+            "WHERE ds.district_id = :districtId ", nativeQuery = true)
+    List<LocationResult> getSubDistrictAndLogisticLevelTwo(@Param("districtId") Long districtId);
 
     @Query(value =
             "SELECT " +
-                    "    cf.location_id AS locationId, " +
+                    "    sub.subdistrict_id AS locationId, " +
                     "    sub.subdistrict_name AS name, " +
                     "    ds.district_name as districtName," +
                     "    prov.province_name AS provinceName,"+
@@ -92,20 +92,22 @@ public interface SubdistrictRepository extends JpaRepository<Subdistrict, Long> 
                     "    wh.warehouse_id AS warehouseId, " +
                     "    wh.warehouse_name AS warehouseName " +
                     "FROM " +
-                    "    lc_province prov " +
-                    "JOIN " +
-                    "    lc_district ds ON prov.province_id = ds.province_id " +
-                    "JOIN " +
-                    "    lc_subdistrict sub ON sub.district_id = ds.district_id " +
-                    "JOIN " +
+                    "    lc_subdistrict sub " +
+                    "LEFT JOIN " +
+                    "    lc_district ds ON sub.district_id = ds.district_id " +
+                    "LEFT JOIN " +
+                    "     lc_province prov  ON ds.province_id = prov.province_id " +
+                    "LEFT JOIN " +
                     "    cf_default_delivery cf ON sub.subdistrict_id = cf.location_id " +
-                    "JOIN " +
+                    "LEFT JOIN " +
                     "    bp_partner ffm ON cf.ffm_partner_id = ffm.partner_id " +
-                    "JOIN " +
+                    "LEFT JOIN " +
                     "    bp_partner lm ON cf.lm_partner_id = lm.partner_id " +
-                    "JOIN " +
-                    "    bp_warehouse wh ON cf.warehouse_id = wh.warehouse_id", nativeQuery = true)
-    List<LocationResult> getSubDistrictAndLogisticLevelThree();
+                    "LEFT JOIN " +
+                    "    bp_warehouse wh ON cf.warehouse_id = wh.warehouse_id " +
+                    "WHERE ds.district_id = :districtId", nativeQuery = true)
+    List<LocationResult> getSubDistrictAndLogisticLevelThree(@Param("districtId") Long districtId);
+
 
     @Modifying
     @Query(value = "UPDATE cf_default_delivery SET ffm_partner_id = :ffmId, lm_partner_id = :lmId, warehouse_id = :whId WHERE location_id = :locationId", nativeQuery = true)

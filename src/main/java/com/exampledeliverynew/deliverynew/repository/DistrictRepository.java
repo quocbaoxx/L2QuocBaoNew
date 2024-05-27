@@ -17,7 +17,7 @@ public interface DistrictRepository extends JpaRepository<District, Long> {
     boolean existsById(@Param("id") Long id);
 
     @Query(value = "SELECT " +
-            "prov.province_id AS locationId, " +
+            "dt.district_id AS locationId, " +
             "prov.province_name AS provinceName, " +
             "dt.district_name AS districtName, " +
             "ffm.partner_id AS ffmId, " +
@@ -29,18 +29,19 @@ public interface DistrictRepository extends JpaRepository<District, Long> {
             "wh.warehouse_id AS warehouseId, " +
             "wh.warehouse_name AS warehouseName " +
             "FROM " +
-            "lc_province prov " +
-            "JOIN " +
-            "lc_district dt ON dt.province_id = prov.province_id " +
-            "JOIN " +
+            "lc_district dt " +
+            "LEFT JOIN " +
+            "lc_province prov  ON dt.province_id = prov.province_id " +
+            "LEFT JOIN " +
             "cf_default_delivery cf ON prov.province_id = cf.location_id " +
-            "JOIN " +
+            "LEFT JOIN " +
             "bp_partner ffm ON cf.ffm_partner_id = ffm.partner_id " +
-            "JOIN " +
+            "LEFT JOIN " +
             "bp_partner lm ON cf.lm_partner_id = lm.partner_id " +
-            "JOIN " +
-            "bp_warehouse wh ON cf.warehouse_id = wh.warehouse_id;", nativeQuery = true)
-    List<LocationResult> getProvinceAndLogisticLevelOne();
+            "LEFT JOIN " +
+            "bp_warehouse wh ON cf.warehouse_id = wh.warehouse_id " +
+            "WHERE  prov.province_id = :provinceId", nativeQuery = true)
+    List<LocationResult> getDistrictAndLogisticLevelOne(@Param("provinceId") Long provinceId);
 
 
     @Query(value = "SELECT " +
@@ -55,22 +56,22 @@ public interface DistrictRepository extends JpaRepository<District, Long> {
             "lm.pn_type AS lmType, " +
             "wh.warehouse_id AS warehouseId, " +
             "wh.warehouse_name AS warehouseName " +
-            "FROM lc_province prov " +
-            "JOIN lc_district ds ON prov.province_id = ds.province_id " +
-            "JOIN cf_default_delivery cf ON ds.district_id = cf.location_id " +
-            "JOIN bp_partner ffm ON cf.ffm_partner_id = ffm.partner_id " +
-            "JOIN bp_partner lm ON cf.lm_partner_id = lm.partner_id " +
-            "JOIN bp_warehouse wh ON cf.warehouse_id = wh.warehouse_id", nativeQuery = true)
-    List<LocationResult> getProvinceAndLogisticLevelTwo();
+            "FROM lc_district ds " +
+            "LEFT JOIN  lc_province prov  ON prov.province_id = ds.province_id " +
+            "LEFT JOIN cf_default_delivery cf ON ds.district_id = cf.location_id " +
+            "LEFT JOIN bp_partner ffm ON cf.ffm_partner_id = ffm.partner_id " +
+            "LEFT JOIN bp_partner lm ON cf.lm_partner_id = lm.partner_id " +
+            "LEFT JOIN bp_warehouse wh ON cf.warehouse_id = wh.warehouse_id " +
+            "WHERE prov.province_id = :provinceId", nativeQuery = true)
+    List<LocationResult> getDistrictAndLogisticLevelTwo(@Param("provinceId") Long provinceId);
 
 
     @Query(value =
             "SELECT " +
-                    "    cf.location_id AS locationId, " +
+                    "    ds.district_id AS locationId, " +
                     "    sub.subdistrict_name AS name, " +
                     "    ds.district_name as districtName," +
                     "    prov.province_name AS provinceName,"+
-                    "    sub.subdistrict_name AS subdistrictName,"+
                     "    ffm.partner_id AS ffmId, " +
                     "    ffm.partner_name AS ffmName, " +
                     "    ffm.pn_type AS ffmType, " +
@@ -80,20 +81,21 @@ public interface DistrictRepository extends JpaRepository<District, Long> {
                     "    wh.warehouse_id AS warehouseId, " +
                     "    wh.warehouse_name AS warehouseName " +
                     "FROM " +
-                    "    lc_province prov " +
-                    "JOIN " +
-                    "    lc_district ds ON prov.province_id = ds.province_id " +
-                    "JOIN " +
+                    "    lc_district ds " +
+                    "LEFT JOIN " +
+                    "     lc_province prov ON prov.province_id = ds.province_id " +
+                    "LEFT JOIN " +
                     "    lc_subdistrict sub ON sub.district_id = ds.district_id " +
-                    "JOIN " +
+                    "LEFT JOIN " +
                     "    cf_default_delivery cf ON sub.subdistrict_id = cf.location_id " +
-                    "JOIN " +
+                    "LEFT JOIN " +
                     "    bp_partner ffm ON cf.ffm_partner_id = ffm.partner_id " +
-                    "JOIN " +
+                    "LEFT JOIN " +
                     "    bp_partner lm ON cf.lm_partner_id = lm.partner_id " +
-                    "JOIN " +
-                    "    bp_warehouse wh ON cf.warehouse_id = wh.warehouse_id", nativeQuery = true)
-    List<LocationResult> getProvinceAndLogisticLevelThree();
+                    "LEFT JOIN " +
+                    "    bp_warehouse wh ON cf.warehouse_id = wh.warehouse_id " +
+                    "WHERE prov.province_id = :provinceId", nativeQuery = true)
+    List<LocationResult> getDistrictAndLogisticLevelThree(@Param("provinceId") Long provinceId);
 
     @Modifying
     @Query(value = "UPDATE cf_default_delivery SET ffm_partner_id = :ffmId, lm_partner_id = :lmId, warehouse_id = :whId WHERE location_id = :locationId", nativeQuery = true)

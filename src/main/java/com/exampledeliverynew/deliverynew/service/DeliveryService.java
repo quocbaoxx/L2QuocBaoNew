@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface DeliveryService {
     List<LocationResult> getAllLogistics();
+
+    List<LocationResult> getAllExpost(int lever);
 }

@@ -17,8 +17,8 @@ public class DistrictController {
     private  final DistrictService districtService;
 
     @GetMapping("/all")
-    public DataResponse<List<DistrictDTO>>  getAllDistrict(@RequestParam Long lever){
-        List<DistrictDTO> districtDTOS = districtService.getAllLeverDistrict(lever);
+    public DataResponse<List<DistrictDTO>>  getAllDistrict(@RequestParam Long lever, @RequestParam Long provinceId){
+        List<DistrictDTO> districtDTOS = districtService.getAllLeverDistrict(lever, provinceId);
         return  DataResponse.ok(districtDTOS);
     }
 
