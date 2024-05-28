@@ -58,7 +58,6 @@ public interface ProvinceRepository extends JpaRepository<Province, Long> {
     @Query(value =
             "SELECT " +
                     "    cf.location_id AS locationId, " +
-                    "    sub.subdistrict_name AS name, " +
                     "    ds.district_name as districtName," +
                     "    prov.province_name AS provinceName,"+
                     "    sub.subdistrict_name AS subdistrictName,"+
