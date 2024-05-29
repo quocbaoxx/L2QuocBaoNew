@@ -1,12 +1,12 @@
 package com.exampledeliverynew.deliverynew.service;
 
 import com.exampledeliverynew.deliverynew.dto.DistrictDTO;
-import com.exampledeliverynew.deliverynew.dto.UpdateDelivery;
+import com.exampledeliverynew.deliverynew.dto.UpdateLogistics;
 
 import java.util.List;
 
 public interface DistrictService {
     List<DistrictDTO> getAllLeverDistrict(Long lever, Long provinceId);
 
-    UpdateDelivery updateDeliveryDistrict(int lever, UpdateDelivery updateDelivery);
+    UpdateLogistics updateDeliveryDistrict(int lever, UpdateLogistics updateLogistics);
 }

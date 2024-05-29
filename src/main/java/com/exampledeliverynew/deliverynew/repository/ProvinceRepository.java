@@ -13,10 +13,6 @@ import java.util.List;
 @Repository
 public interface ProvinceRepository extends JpaRepository<Province, Long> {
 
-    @Query(value = "SELECT COUNT(*) > 0 FROM lc_province WHERE province_id = :id", nativeQuery = true)
-    boolean existsById(@Param("id") Long id);
-
-
     @Query(value = "SELECT " +
             "prov.province_id AS locationId, " +
             "prov.province_name AS provinceName, " +
@@ -38,7 +34,7 @@ public interface ProvinceRepository extends JpaRepository<Province, Long> {
     @Query(value = "SELECT " +
             "ds.district_id AS locationId, " +
             "ds.district_name AS districtName, " +
-            "prov.province_name AS provinceName,"+
+            "prov.province_name AS provinceName," +
             "ffm.partner_id AS ffmId, " +
             "ffm.partner_name AS ffmName, " +
             "ffm.pn_type AS ffmType, " +
@@ -59,8 +55,8 @@ public interface ProvinceRepository extends JpaRepository<Province, Long> {
             "SELECT " +
                     "    cf.location_id AS locationId, " +
                     "    ds.district_name as districtName," +
-                    "    prov.province_name AS provinceName,"+
-                    "    sub.subdistrict_name AS subdistrictName,"+
+                    "    prov.province_name AS provinceName," +
+                    "    sub.subdistrict_name AS subdistrictName," +
                     "    ffm.partner_id AS ffmId, " +
                     "    ffm.partner_name AS ffmName, " +
                     "    ffm.pn_type AS ffmType, " +
@@ -85,10 +81,47 @@ public interface ProvinceRepository extends JpaRepository<Province, Long> {
                     "    bp_warehouse wh ON cf.warehouse_id = wh.warehouse_id", nativeQuery = true)
     List<LocationResult> getProvinceAndLogisticLevelThree();
 
+    @Query(value = "SELECT count(p.province_id) from lc_province p WHERE p.province_id = :provinceId", nativeQuery = true)
+    Long checkExitsProvince(@Param("provinceId") Long id);
 
+    @Modifying
+    @Query(value = "UPDATE cf_default_delivery " +
+            "SET ffm_partner_id = :ffmId, " +
+            "    lm_partner_id = :lmId, " +
+            "    warehouse_id = :whId " +
+            "WHERE location_id IN ( " +
+            "SELECT province_id " +
+            "FROM lc_province " +
+            "WHERE province_id = :provinceId )", nativeQuery = true)
+    void updateLogisticProvinceLv1(@Param("provinceId") Long provinceId, @Param("ffmId") Long ffmId, @Param("lmId") Long lmId, @Param("whId") Long whId);
 
 
     @Modifying
-    @Query(value = "UPDATE cf_default_delivery SET ffm_partner_id = :ffmId, lm_partner_id = :lmId, warehouse_id = :whId WHERE location_id = :locationId", nativeQuery = true)
-    void updateDeliveryProvince(@Param("locationId") Long locationId, @Param("ffmId") Long ffmId, @Param("lmId") Long lmId, @Param("whId") Long whId);
+    @Query(value = "UPDATE cf_default_delivery " +
+            "SET ffm_partner_id = :ffmId, " +
+            "    lm_partner_id = :lmId, " +
+            "    warehouse_id = :whId " +
+            "Where location_id IN ( " +
+            "SELECT d.district_id " +
+            "FROM lc_province pro join lc_district d  " +
+            "ON pro.province_id = d.province_id " +
+            "WHERE  pro.province_id = :provinceId )", nativeQuery = true)
+    void updateLogisticProvinceLv2(@Param("provinceId") Long provinceId, @Param("ffmId") Long ffmId, @Param("lmId") Long lmId, @Param("whId") Long whId);
+
+    @Modifying
+    @Query(value = "UPDATE cf_default_delivery " +
+            "SET ffm_partner_id = :ffmId, " +
+            "    lm_partner_id = :lmId, " +
+            "    warehouse_id = :whId " +
+            "Where location_id IN ( " +
+            "SELECT sub.subdistrict_id " +
+            "FROM lc_province pro JOIN lc_district d  " +
+            "ON pro.province_id = d.province_id " +
+            "JOIN lc_subdistrict sub  " +
+            "ON sub.district_id = d.district_id " +
+            "WHERE  pro.province_id = :provinceId )", nativeQuery = true)
+    void updateLogisticProvinceLv3(@Param("provinceId") Long provinceId, @Param("ffmId") Long ffmId, @Param("lmId") Long lmId, @Param("whId") Long whId);
+
+
+
 }

@@ -2,7 +2,7 @@ package com.exampledeliverynew.deliverynew.controller;
 
 import com.exampledeliverynew.deliverynew.commons.DataResponse;
 import com.exampledeliverynew.deliverynew.dto.DistrictDTO;
-import com.exampledeliverynew.deliverynew.dto.UpdateDelivery;
+import com.exampledeliverynew.deliverynew.dto.UpdateLogistics;
 import com.exampledeliverynew.deliverynew.service.DistrictService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -23,8 +23,8 @@ public class DistrictController {
     }
 
     @PutMapping("/update")
-    public DataResponse<UpdateDelivery> updateDeliveryProvince(@RequestParam int lever, @RequestBody UpdateDelivery updateDelivery){
-        UpdateDelivery updateDelivery1 = districtService.updateDeliveryDistrict(lever, updateDelivery);
+    public DataResponse<UpdateLogistics> updateDeliveryProvince(@RequestParam int lever, @RequestBody UpdateLogistics updateLogistics){
+        UpdateLogistics updateDelivery1 = districtService.updateDeliveryDistrict(lever, updateLogistics);
         return DataResponse.ok(updateDelivery1);
     }
 

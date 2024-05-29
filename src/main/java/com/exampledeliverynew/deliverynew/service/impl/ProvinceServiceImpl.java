@@ -1,11 +1,11 @@
 package com.exampledeliverynew.deliverynew.service.impl;
 
 import com.exampledeliverynew.deliverynew.commons.exception.ErrorMessages;
+import com.exampledeliverynew.deliverynew.config.LocationLeverProperties;
 import com.exampledeliverynew.deliverynew.dto.LocationResult;
 import com.exampledeliverynew.deliverynew.dto.ProvinceDTO;
-import com.exampledeliverynew.deliverynew.dto.UpdateDelivery;
+import com.exampledeliverynew.deliverynew.dto.UpdateLogistics;
 import com.exampledeliverynew.deliverynew.dto.impl.ProvinceDTOImpl;
-import com.exampledeliverynew.deliverynew.entity.DefaultDelivery;
 import com.exampledeliverynew.deliverynew.entity.WareHouse;
 import com.exampledeliverynew.deliverynew.repository.*;
 import com.exampledeliverynew.deliverynew.service.ProvinceService;
@@ -23,10 +23,10 @@ import static com.exampledeliverynew.deliverynew.consts.Const.*;
 public class ProvinceServiceImpl implements ProvinceService {
 
     private final ProvinceRepository provinceRepository ;
-    private  final DistrictRepository districtRepository;
-    private  final SubdistrictRepository subdistrictRepository;
     private  final WarehouseRepository warehouseRepository;
     private  final PartnerRepository partnerRepository;
+    private final LocationLeverProperties locationLeverProperties;
+
 
     @Override
     public List<ProvinceDTO> getAllLever(Long leverMapping) {
@@ -51,34 +51,43 @@ public class ProvinceServiceImpl implements ProvinceService {
 
     @Override
     @Transactional
-    public UpdateDelivery updateDeliveryProvince(int lever, UpdateDelivery updateDelivery) {
-
-        DefaultDelivery defaultDelivery ;
-        Long locationIdDTO = updateDelivery.getLocationId();
-        int locationLv ;
-        if (provinceRepository.existsById(locationIdDTO)){
-            locationLv = 1;
-        }else  if (districtRepository.existsById(locationIdDTO)){
-            locationLv = 2;
-        }else if (subdistrictRepository.existsById(locationIdDTO)){
-            locationLv = 3;
-        }else {
+    public UpdateLogistics updateDeliveryProvince(int lever, UpdateLogistics updateLogistics) {
+        Long count =  provinceRepository.checkExitsProvince(updateLogistics.getId());
+        if (count.equals(0l)){
             throw  new IllegalArgumentException(ErrorMessages.INVALID_VALUE.getMessage());
         }
-        if (locationLv >= lever){
-            validateEntities(updateDelivery);
-        }else {
-            throw  new IndexOutOfBoundsException(ErrorMessages.FORBIDDEN.getMessage());
-        }
-        defaultDelivery = new DefaultDelivery(updateDelivery.getLocationId(),updateDelivery.getFfmId(),updateDelivery.getLmId(),updateDelivery.getWhId());
+        switch (lever){
+            case LEVER_ONE:
+                if (locationLeverProperties.getLocationLever() <= lever){
+                    validateEntities(updateLogistics);
+                    provinceRepository.updateLogisticProvinceLv1(updateLogistics.getId(), updateLogistics.getFfmId(),updateLogistics.getLmId(),updateLogistics.getWhId());
+                }else {
+                    throw  new IllegalArgumentException(ErrorMessages.FORBIDDEN.getMessage());
+                }
+                break;
+            case LEVER_TWO:
+                if (locationLeverProperties.getLocationLever() <= lever){
+                    validateEntities(updateLogistics);
+                    provinceRepository.updateLogisticProvinceLv2(updateLogistics.getId(), updateLogistics.getFfmId(),updateLogistics.getLmId(),updateLogistics.getWhId());
+                }else {
+                    throw  new IllegalArgumentException(ErrorMessages.FORBIDDEN.getMessage());
+                }
+                break;
+            case  LEVER_THREE:
+                    validateEntities(updateLogistics);
+                    provinceRepository.updateLogisticProvinceLv3(updateLogistics.getId(), updateLogistics.getFfmId(),updateLogistics.getLmId(),updateLogistics.getWhId());
+                break;
+            default:
+                throw  new IllegalArgumentException(ErrorMessages.INVALID_VALUE.getMessage());
 
-        return new UpdateDelivery(defaultDelivery);
+        }
+        return  updateLogistics;
     }
 
-    private void validateEntities(UpdateDelivery updateDelivery) {
-        Long ffmId = updateDelivery.getFfmId();
-        Long lmId = updateDelivery.getLmId();
-        Long whId = updateDelivery.getWhId();
+    private void validateEntities(UpdateLogistics updateLogistics) {
+        Long ffmId = updateLogistics.getFfmId();
+        Long lmId = updateLogistics.getLmId();
+        Long whId = updateLogistics.getWhId();
 
         WareHouse wareHouse = warehouseRepository.getById(whId);
         Long count = partnerRepository.checkExits(ffmId, lmId);
@@ -86,7 +95,6 @@ public class ProvinceServiceImpl implements ProvinceService {
         if (wareHouse == null ||  count == null || !count.equals(2l) ) {
             throw new IllegalArgumentException(ErrorMessages.INVALID_VALUE.getMessage());
         }
-        provinceRepository.updateDeliveryProvince(updateDelivery.getLocationId(), updateDelivery.getFfmId(), updateDelivery.getLmId(), updateDelivery.getWhId());
     }
 
     private List<ProvinceDTO> mapQueryResultsToDTO(List<LocationResult> locationResults) {
@@ -104,7 +112,5 @@ public class ProvinceServiceImpl implements ProvinceService {
         }
         return new LinkedList<>(provinceMap.values());
     }
-
-
 
 }

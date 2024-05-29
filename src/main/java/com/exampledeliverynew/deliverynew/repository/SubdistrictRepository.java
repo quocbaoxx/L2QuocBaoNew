@@ -13,9 +13,6 @@ import java.util.List;
 @Repository
 public interface SubdistrictRepository extends JpaRepository<Subdistrict, Long> {
 
-    @Query(value = "SELECT COUNT(*) > 0 FROM lc_subdistrict WHERE subdistrict_id = :id", nativeQuery = true)
-    boolean existsById(@Param("id") Long id);
-
     @Query(value = "SELECT " +
             "sub.subdistrict_id AS locationId, " +
             "prov.province_name AS provinceName, " +
@@ -81,8 +78,8 @@ public interface SubdistrictRepository extends JpaRepository<Subdistrict, Long> 
                     "    sub.subdistrict_id AS locationId, " +
                     "    sub.subdistrict_name AS name, " +
                     "    ds.district_name as districtName," +
-                    "    prov.province_name AS provinceName,"+
-                    "    sub.subdistrict_name AS subdistrictName,"+
+                    "    prov.province_name AS provinceName," +
+                    "    sub.subdistrict_name AS subdistrictName," +
                     "    ffm.partner_id AS ffmId, " +
                     "    ffm.partner_name AS ffmName, " +
                     "    ffm.pn_type AS ffmType, " +
@@ -108,8 +105,46 @@ public interface SubdistrictRepository extends JpaRepository<Subdistrict, Long> 
                     "WHERE ds.district_id = :districtId", nativeQuery = true)
     List<LocationResult> getSubDistrictAndLogisticLevelThree(@Param("districtId") Long districtId);
 
+    @Query(value = "Select count(sub.subdistrict_id) FROM lc_subdistrict sub Where sub.subdistrict_id = :subdistrictId ", nativeQuery = true)
+    Long checkExitsSubdistrict(@Param("subdistrictId") Long subdistrictId);
 
     @Modifying
-    @Query(value = "UPDATE cf_default_delivery SET ffm_partner_id = :ffmId, lm_partner_id = :lmId, warehouse_id = :whId WHERE location_id = :locationId", nativeQuery = true)
-    void updateDeliveryDistrict(Long locationId, Long ffmId, Long lmId, Long whId);
+    @Query(value = "UPDATE cf_default_delivery " +
+            "SET ffm_partner_id = :ffmId, " +
+            "    lm_partner_id = :lmId, " +
+            "    warehouse_id = :whId " +
+            "Where location_id IN ( " +
+            "SELECT pro.province_id " +
+            "FROM lc_province pro " +
+            "JOIN lc_district d  " +
+            "ON pro.province_id = d.province_id " +
+            "JOIN lc_subdistrict sub  " +
+            "ON sub.district_id = d.district_id " +
+            "WHERE  sub.subdistrict_id = :subdistrictId )", nativeQuery = true)
+    void updateDeliverySubdistrictLv1(@Param("subdistrictId") Long subdistrictId, @Param("ffmId") Long ffmId, @Param("lmId") Long lmId, @Param("whId") Long whId);
+
+    @Modifying
+    @Query(value = "UPDATE cf_default_delivery " +
+            "SET ffm_partner_id = :ffmId, " +
+            "    lm_partner_id = :lmId, " +
+            "    warehouse_id = :whId " +
+            "Where location_id IN ( " +
+            "SELECT d.district_id " +
+            "FROM lc_district d  " +
+            "JOIN lc_subdistrict sub  " +
+            "ON sub.district_id = d.district_id " +
+            "WHERE  sub.subdistrict_id  = :subdistrictId )", nativeQuery = true)
+    void updateDeliverySubdistrictLv2(@Param("subdistrictId") Long subdistrictId, @Param("ffmId") Long ffmId, @Param("lmId") Long lmId, @Param("whId") Long whId);
+
+    @Modifying
+    @Query(value = "UPDATE cf_default_delivery " +
+            "SET ffm_partner_id = :ffmId, " +
+            "    lm_partner_id = :lmId, " +
+            "    warehouse_id = :whId " +
+            "Where location_id IN ( " +
+            "SELECT sub.subdistrict_id " +
+            "FROM lc_subdistrict sub  " +
+            "WHERE  sub.subdistrict_id = :subdistrictId )", nativeQuery = true)
+    void updateDeliverySubdistrictLv3(@Param("subdistrictId") Long subdistrictId, @Param("ffmId") Long ffmId, @Param("lmId") Long lmId, @Param("whId") Long whId);
+
 }

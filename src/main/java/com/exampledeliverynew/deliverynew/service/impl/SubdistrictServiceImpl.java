@@ -1,11 +1,11 @@
 package com.exampledeliverynew.deliverynew.service.impl;
 
 import com.exampledeliverynew.deliverynew.commons.exception.ErrorMessages;
+import com.exampledeliverynew.deliverynew.config.LocationLeverProperties;
 import com.exampledeliverynew.deliverynew.dto.LocationResult;
 import com.exampledeliverynew.deliverynew.dto.SubdistrictDTO;
-import com.exampledeliverynew.deliverynew.dto.UpdateDelivery;
+import com.exampledeliverynew.deliverynew.dto.UpdateLogistics;
 import com.exampledeliverynew.deliverynew.dto.impl.SubdistrictDTOImpl;
-import com.exampledeliverynew.deliverynew.entity.DefaultDelivery;
 import com.exampledeliverynew.deliverynew.entity.WareHouse;
 import com.exampledeliverynew.deliverynew.repository.*;
 import com.exampledeliverynew.deliverynew.service.SubdistrictService;
@@ -26,10 +26,9 @@ import static com.exampledeliverynew.deliverynew.consts.Const.*;
 public class SubdistrictServiceImpl implements SubdistrictService {
 
     private  final SubdistrictRepository subdistrictRepository;
-    private  final DistrictRepository districtRepository;
-    private  final ProvinceRepository provinceRepository;
     private  final PartnerRepository partnerRepository;
     private  final WarehouseRepository warehouseRepository;
+    private  final LocationLeverProperties locationLeverProperties;
 
 
     @Override
@@ -54,34 +53,43 @@ public class SubdistrictServiceImpl implements SubdistrictService {
 
     @Override
     @Transactional
-    public UpdateDelivery updateDeliverySubdistrict(int lever, UpdateDelivery updateDelivery) {
-        DefaultDelivery defaultDelivery ;
-        Long locationIdDTO = updateDelivery.getLocationId();
-        int locationLv ;
-        if (provinceRepository.existsById(locationIdDTO)){
-            locationLv = 1;
-        }else  if (districtRepository.existsById(locationIdDTO)){
-            locationLv = 2;
-        }else if (subdistrictRepository.existsById(locationIdDTO)){
-            locationLv = 3;
-        }else {
+    public UpdateLogistics updateDeliverySubdistrict(int lever, UpdateLogistics updateLogistics) {
+        Long count = subdistrictRepository.checkExitsSubdistrict(updateLogistics.getId());
+        if (count.equals(0l)){
             throw  new IllegalArgumentException(ErrorMessages.INVALID_VALUE.getMessage());
         }
 
-        if (locationLv >= lever){
-            validateEntities(updateDelivery);
-        }else {
-            throw  new IndexOutOfBoundsException(ErrorMessages.FORBIDDEN.getMessage());
-        }
-        defaultDelivery = new DefaultDelivery(updateDelivery.getLocationId(),updateDelivery.getFfmId(),updateDelivery.getLmId(),updateDelivery.getWhId());
+        switch (lever){
+            case LEVER_ONE:
+                if (locationLeverProperties.getLocationLever() <= lever){
+                    validateEntities(updateLogistics);
+                    subdistrictRepository.updateDeliverySubdistrictLv1(updateLogistics.getId(), updateLogistics.getFfmId(),updateLogistics.getLmId(),updateLogistics.getWhId());
+                }else {
+                    throw  new IllegalArgumentException(ErrorMessages.FORBIDDEN.getMessage());
+                }
+                break;
+            case LEVER_TWO:
+                if (locationLeverProperties.getLocationLever() <=lever){
+                    validateEntities(updateLogistics);
+                    subdistrictRepository.updateDeliverySubdistrictLv2(updateLogistics.getId(), updateLogistics.getFfmId(),updateLogistics.getLmId(),updateLogistics.getWhId());
+                }else {
+                    throw  new IllegalArgumentException(ErrorMessages.FORBIDDEN.getMessage());
+                }
+            case LEVER_THREE:
+                validateEntities(updateLogistics);
+                subdistrictRepository.updateDeliverySubdistrictLv3(updateLogistics.getId(), updateLogistics.getFfmId(),updateLogistics.getLmId(),updateLogistics.getWhId());
+                break;
+            default:
+                throw  new IllegalArgumentException(ErrorMessages.INVALID_VALUE.getMessage());
 
-        return new UpdateDelivery(defaultDelivery);
+        }
+       return  updateLogistics;
     }
 
-    private void validateEntities(UpdateDelivery updateDelivery) {
-        Long ffmId = updateDelivery.getFfmId();
-        Long lmId = updateDelivery.getLmId();
-        Long whId = updateDelivery.getWhId();
+    private void validateEntities(UpdateLogistics updateLogistics) {
+        Long ffmId = updateLogistics.getFfmId();
+        Long lmId = updateLogistics.getLmId();
+        Long whId = updateLogistics.getWhId();
 
         WareHouse wareHouse = warehouseRepository.getById(whId);
         Long count = partnerRepository.checkExits(ffmId, lmId);
@@ -89,7 +97,6 @@ public class SubdistrictServiceImpl implements SubdistrictService {
         if (wareHouse == null ||  count == null || !count.equals(2l) ) {
             throw new IllegalArgumentException(ErrorMessages.INVALID_VALUE.getMessage());
         }
-        subdistrictRepository.updateDeliveryDistrict(updateDelivery.getLocationId(), updateDelivery.getFfmId(), updateDelivery.getLmId(), updateDelivery.getWhId());
     }
 
     private List<SubdistrictDTO> mapQueryResultsToDTO(List<LocationResult> locationResults) {

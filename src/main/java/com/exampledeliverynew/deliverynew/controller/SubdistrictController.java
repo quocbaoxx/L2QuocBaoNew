@@ -2,7 +2,7 @@ package com.exampledeliverynew.deliverynew.controller;
 
 import com.exampledeliverynew.deliverynew.commons.DataResponse;
 import com.exampledeliverynew.deliverynew.dto.SubdistrictDTO;
-import com.exampledeliverynew.deliverynew.dto.UpdateDelivery;
+import com.exampledeliverynew.deliverynew.dto.UpdateLogistics;
 import com.exampledeliverynew.deliverynew.service.SubdistrictService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -23,8 +23,8 @@ public class SubdistrictController {
     }
 
     @PutMapping("/update")
-    public DataResponse<UpdateDelivery> updateDeliveryProvince(@RequestParam int lever, @RequestBody UpdateDelivery updateDelivery){
-        UpdateDelivery updateDelivery1 = subdistrictService.updateDeliverySubdistrict(lever, updateDelivery);
+    public DataResponse<UpdateLogistics> updateDeliveryProvince(@RequestParam int lever, @RequestBody UpdateLogistics updateLogistics){
+        UpdateLogistics updateDelivery1 = subdistrictService.updateDeliverySubdistrict(lever, updateLogistics);
         return DataResponse.ok(updateDelivery1);
     }
 
